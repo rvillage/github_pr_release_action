@@ -1,0 +1,11 @@
+Release created by @<%= ENV["GITHUB_ACTOR"] %>
+
+# Pull requests
+
+<% pull_requests.each do |pr| -%>
+<%=  pr.to_checklist_item %>
+<% end -%>
+
+# Issue
+
+- #<%= ENV["ISSUE_NUMBER"] %>
