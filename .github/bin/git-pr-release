@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << "./.github/lib"
+require "common"
+require "issue"
+
+begin
+  issue_url = event_json.dig("issue", "url")
+  Issue.create_comment(issue_url, ":hourglass_flowing_sand:Processing...")
+
+  run "sudo chown -R circleci:circleci ${PWD}"
+  run "git remote set-url origin https://${GIT_PR_RELEASE_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+  run "gem install git-pr-release"
+
+  issue_number = event_json.dig("issue", "number")
+  run({ "DEBUG" => "enable", "ISSUE_NUMBER" => issue_number.to_s }, "git-pr-release")
+
+  Issue.close(issue_url)
+rescue
+  Issue.create_comment(issue_url, ":ng:")
+  raise
+end
